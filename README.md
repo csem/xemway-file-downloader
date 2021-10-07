@@ -2,10 +2,10 @@
 
 The file downloader makes use of 4 environment variables
 
--   XEMWAY_API_ENDPOINT: Typically https://api.xemway.ch
--   XEMWAY_AUTH_ENDPOINT: Typically https://auth.xemway.ch
--   XEMWAY_AUTH_USERNAME: The Xemway domain concatenated with the username using a colon ":"
--   XEMWAY_AUTH_PASSWORD: Your Xemway password
+-   ```XEMWAY_API_ENDPOINT```: Typically https://api.xemway.ch
+-   ```XEMWAY_AUTH_ENDPOINT```: Typically https://auth.xemway.ch
+-   ```XEMWAY_AUTH_USERNAME```: The Xemway domain concatenated with the username using a colon ":"
+-   ```XEMWAY_AUTH_PASSWORD```: Your Xemway password
 
 Those variables must be defined before the downloader is used.
 
