@@ -85,3 +85,17 @@ Filter = FilterCollection(
 
 cursor.init(Filter)
 ```
+
+## Extract the archive and filter for useful files
+
+Parsed session files can be fairly large and in most cases not useful for medical studies. To remove them, feed the following options to the ```download``` method:
+
+```python
+opts = {
+    "extract_archive": True,
+    "keep_files": ["ACC_Data.csv"]
+}
+```
+
+which extracts the archive and selects the files listed in the list. The archive will be deleted afterwards and you'll be left with the directory.
+You may not use ```keep_files```  without ```extract_archive```.
