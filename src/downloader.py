@@ -60,13 +60,14 @@ class BearerAuth(AuthBase):
 class XemwayFileDownloader():
 
     def __init__(self):
-
+        '''Registers the credentials from environment variables'''
         self.auth_endpoint = os.environ["XEMWAY_AUTH_ENDPOINT"]
         self.auth_username = os.environ["XEMWAY_AUTH_USERNAME"]
         self.auth_password = os.environ["XEMWAY_AUTH_PASSWORD"]
         self.auth_ok = False
 
     def __enter__(self):
+        '''Attempts to log with to the endpoint with the given credentials'''
         self._bearer_token: str = None
 
         logging.info(
@@ -95,9 +96,29 @@ class XemwayFileDownloader():
         pass
 
     def get_device_file_cursor(self, device_name: str) -> DeviceSessionCursor:
+        '''
+        Returns a cursor pointint to a list of files per device
+
+            Parameters
+                device_name (str): The name of the device
+            
+            Returns:
+                cursor (DeviceSessionCursor): A cursor to the list of files for this device
+        '''
         return DeviceSessionCursor(device_name, self._bearer_token)
 
     def download_file(self, session_name: str, save_to_file: str, opts: dict):
+        '''
+        Initiates a file download
+
+            Parameters
+                session_name (str): The name of the session to download
+                save_to_file (str): The path where the file should be stored, including the filename (usually with .zip)
+                opts (dict): Additional options to further specify the download behaviour
+                opts.extract_archive (bool): Whether or not to extract the archive (uses shutils)
+                opts.keep_files (list): A list of filenames to keep. The other ones will be removed. Use None to keep all files
+        '''
+
         api_endpoint = os.environ["XEMWAY_API_ENDPOINT"]
 
         api_url: str = f"{api_endpoint}/file/{session_name}/download"

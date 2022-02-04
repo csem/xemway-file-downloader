@@ -44,19 +44,31 @@ OptionalFilterCollection = Union[FilterCollection, None]
 class Cursor:
 
     def __init__(self, base_filtering: OptionalFilterCollection = None):
+        """A cursor permitting the iteration over several pages
+
+        Args:
+            base_filtering (OptionalFilterCollection, optional): A list of pre-filters given by the instanciator, which couples with an "and" given by the iniator. Defaults to None.
+        """
         self._page = -1
         self.num_per_page = 20
         self._base_filtering = base_filtering
 
     def init(self, filtering: OptionalFilterCollection = None):
+        """Initializes the cursor by looking for the first page
+
+        Args:
+            filtering (OptionalFilterCollection, optional): A additional collection of filters to refine the filtering. Defaults to None.
+        """
         self._filtering = filtering
         self._findById(0)
 
     def get_count(self):
-        return self._count
+        """Finds the number of elements matched by the cursor
 
-    def current(self):
-        return self._curent
+        Returns:
+            int: Total number of elements
+        """
+        return self._count
 
     def check_count(self, id):
         if id >= self._count:
@@ -64,6 +76,14 @@ class Cursor:
                 f"Index f{id} exceeds the maximum number of documents.")
 
     def next(self, byHowMany: int = 1):
+        """Moves the cursor forward 
+
+        Args:
+            byHowMany (int, optional): offset used to access the next element in the list. Defaults to 1.
+
+        Returns:
+            Cursor: the cursor (self)
+        """
         id = self._id + byHowMany
 
         self.check_count(id)
@@ -71,6 +91,17 @@ class Cursor:
         return self
 
     def prev(self, byHowMany: int = 1):
+        """Moves the cursor backwards
+
+        Args:
+            byHowMany (int, optional): offset used to access the previous element in the list. Defaults to 1.
+
+        Raises:
+            Exception: When the index is out of bounds
+
+        Returns:
+            Cursor: the cursor (self)
+        """
         id = self._id - byHowMany
         if id < 0:
             raise Exception(f"Index f{id} is negative.")
@@ -93,6 +124,11 @@ class Cursor:
         self._id = id
 
     def get_item(self):
+        """Returns the current element matched by the cursor
+
+        Returns:
+            any: The current element matched by the cursor
+        """
         return self._item
 
     def fetch(self, page: int):
