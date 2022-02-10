@@ -148,12 +148,17 @@ class XemwayFileDownloader():
         if "extract_archive" in opts and opts["extract_archive"]:
             shutil.unpack_archive(save_to_file, foldername, archive_format)
 
-        if "keep_files" in opts:
+        if "keep_files_containing" in opts:
 
             with os.scandir(foldername) as it:
                 for entry in it:
                     if not entry.name.startswith('.') and entry.is_file():
-                        if entry.name not in opts["keep_files"]:
+                        to_be_erased = True
+                        for prefix in opts["keep_files_containing"]:
+                            if prefix in entry.name:
+                                to_be_erased = False
+
+                        if to_be_erased:
                             os.remove(entry.path)
 
             os.remove(save_to_file)

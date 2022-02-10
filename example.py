@@ -7,14 +7,10 @@ logging.getLogger().setLevel(logging.FATAL)
 opts = {
     "extract_archive":
     True,
-    "keep_files": [
-        "ACC_Data.csv", "ACT_Data.csv", "BARO_Data.csv", "HR_Data.csv",
-        "IBI0_Data.csv", "IBI1_Data.csv", "TMP_Data.csv",
-        "variable_ACC_info.txt", "variable_ACT_info.txt",
-        "variable_BARO_info.txt", "variable_HR_info.txt",
-        "variable_IBI0_info.txt", "variable_IBI1_info.txt",
-        "variable_TMP_info.txt"
-    ]
+    "keep_files_containing": [  # keep files containing this string
+        "ACC", "ACT", "BARO", "HR",
+        "IBI", "TMP",
+    ],
 }
 
 if __name__ == "__main__":
