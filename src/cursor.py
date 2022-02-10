@@ -1,3 +1,4 @@
+from asyncio.log import logger
 import math
 import json
 from typing import List, Union, Literal
@@ -71,12 +72,13 @@ class Cursor:
         return self._count
 
     def check_count(self, id):
-        if id >= self._count:
+        logger.debug(f"Id: {id}")
+        if id > self._count:
             raise Exception(
-                f"Index f{id} exceeds the maximum number of documents.")
+                f"Index {id} exceeds the maximum number of documents.")
 
     def next(self, byHowMany: int = 1):
-        """Moves the cursor forward 
+        """Moves the cursor forward
 
         Args:
             byHowMany (int, optional): offset used to access the next element in the list. Defaults to 1.

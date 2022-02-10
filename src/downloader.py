@@ -74,7 +74,7 @@ class XemwayFileDownloader():
             f"Performing authentication to { self.auth_endpoint } with username { self.auth_username }"
         )  # noqa: E501
 
-        req_auth = get(f"{self.auth_endpoint}/login",
+        req_auth = get(f"{self.auth_endpoint}/login?appId=xem",
                        auth=HTTPBasicAuth(self.auth_username,
                                           self.auth_password))
 
@@ -90,7 +90,7 @@ class XemwayFileDownloader():
 
     def __exit__(self, exc_type, exc_value, trback):
         self._bearer_token = None
-        logging.error(
+        logging.info(
             "Error obtaining a download ressource. Are your credentials correct ?"
         )
         pass
