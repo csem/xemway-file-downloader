@@ -90,10 +90,10 @@ class XemwayFileDownloader():
 
     def __exit__(self, exc_type, exc_value, trback):
         self._bearer_token = None
-        logging.info(
-            "Error obtaining a download ressource. Are your credentials correct ?"
+        logging.debug(
+            "Cleared Token."
         )
-        pass
+
 
     def get_device_file_cursor(self, device_name: str) -> DeviceSessionCursor:
         '''
@@ -101,7 +101,7 @@ class XemwayFileDownloader():
 
             Parameters
                 device_name (str): The name of the device
-            
+
             Returns:
                 cursor (DeviceSessionCursor): A cursor to the list of files for this device
         '''
@@ -116,7 +116,7 @@ class XemwayFileDownloader():
                 save_to_file (str): The path where the file should be stored, including the filename (usually with .zip)
                 opts (dict): Additional options to further specify the download behaviour
                 opts.extract_archive (bool): Whether or not to extract the archive (uses shutils)
-                opts.keep_files (list): A list of filenames to keep. The other ones will be removed. Use None to keep all files
+                opts.keep_files_containing (list): A list of filenames to keep. The other ones will be removed. Use None to keep all files
         '''
 
         api_endpoint = os.environ["XEMWAY_API_ENDPOINT"]
@@ -132,7 +132,7 @@ class XemwayFileDownloader():
             current_size = 0
             chunk_size = 128
 
-            print(f"Downloading {session_name}.\
+            print(f"Downloading {session_name}\
                      Total size: {sizeof_fmt(total_size)}")
             for chunk in r.iter_content(chunk_size):
                 fd.write(chunk)
@@ -144,22 +144,46 @@ class XemwayFileDownloader():
                       "-".join(["" for i in range(100 - progress)]) + "]",
                       end="\r")
 
+            print('\n')
+
         foldername = "%s_extracted" % (save_to_file)
         if "extract_archive" in opts and opts["extract_archive"]:
+            logger.debug('Extracting file...')
             shutil.unpack_archive(save_to_file, foldername, archive_format)
 
-        if "keep_files_containing" in opts:
+            if "keep_files_containing" in opts:
+                with os.scandir(foldername) as it:
+                    for entry in it:
+                        if not entry.name.startswith('.') and entry.is_file():
+                            to_be_erased = True
+                            for prefix in opts["keep_files_containing"]:
+                                if prefix in entry.name:
+                                    to_be_erased = False
 
-            with os.scandir(foldername) as it:
-                for entry in it:
-                    if not entry.name.startswith('.') and entry.is_file():
-                        to_be_erased = True
-                        for prefix in opts["keep_files_containing"]:
-                            if prefix in entry.name:
-                                to_be_erased = False
+                            if to_be_erased:
+                                os.remove(entry.path)
 
-                        if to_be_erased:
-                            os.remove(entry.path)
+            if "erase_files_containing" in opts:
+                with os.scandir(foldername) as it:
+                    for entry in it:
+                        if not entry.name.startswith('.') and entry.is_file():
+                            to_be_erased = False
+                            for prefix in opts["erase_files_containing"]:
+                                if prefix in entry.name:
+                                    to_be_erased = True
 
-            os.remove(save_to_file)
-        print("")
+                            if to_be_erased:
+                                os.remove(entry.path)
+
+            if "erase_after_extract" in opts and opts["erase_after_extract"] is True:
+                os.remove(save_to_file)
+                logger.debug('Erasing file...')
+            else:
+                logger.info(f'Renaming file to {session_name}.zip')
+                os.rename(save_to_file, f"{session_name}.zip")
+
+        else:
+            logger.debug('Did not extract file...  ')
+            logger.warning(f'Since file was not extracted, renaming instead of erasing to {session_name}.zip')
+            os.rename(save_to_file, f"{session_name}.zip")
+
