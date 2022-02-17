@@ -93,9 +93,9 @@ Parsed session files can be fairly large and in most cases not useful for medica
 ```python
 opts = {
     "extract_archive": True,
-    "keep_files": ["ACC_Data.csv"]
+    "keep_files_containing": ["ACC_Data.csv"]
 }
 ```
 
 which extracts the archive and selects the files listed in the list. The archive will be deleted afterwards and you'll be left with the directory.
-You may not use ```keep_files```  without ```extract_archive```.
+You may not use ```keep_files_containing```  without ```extract_archive```.
